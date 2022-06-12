@@ -31,11 +31,11 @@ CREATE TABLE palabras(
 -- Create the table partidas
 CREATE TABLE partidas(
     idPartida int unsigned not null auto_increment primary key,
-    tiempo time not null,
-    nAciertos tinyint unsigned not null,
-    nErrores tinyint unsigned not null,
-    puntuacion tinyint unsigned not null,
-    fechaHora datetime not null,
+    tiempo time null default null,
+    nAciertos tinyint unsigned null default null,
+    nErrores tinyint unsigned null default null,
+    puntuacion tinyint unsigned null default null,
+    fechaHora datetime null default null,
     idUsuario int unsigned not null,
     idTipo tinyint unsigned not null,
     CONSTRAINT fk_usuarios FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario),
