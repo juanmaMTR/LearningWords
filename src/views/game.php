@@ -2,15 +2,12 @@
     require_once __DIR__. '/../php/controller/controller.php';
     $controlador=new Controller();
     $nombre=$_GET['nombre'];
-    $idPartida=$_GET['idPartida'];
+    /* if(!isset($_COOKIE['palabras'])){
+        setcookie('palabras',)
+    } */
     $resultado=$controlador->cogerPalabras($nombre);
-    //echo json_encode($resultado);
-    $palabra=$controlador->controlarPalabra($resultado);
-    if(isset($_POST['comprobar'])){
-        $controlador->comprobar($idPartida);
-    }
     if(isset($_POST['terminar'])){
-        $controlador->terminarPartida($idPartida);
+        $controlador->terminarPartida($nombre);
         header("Location: ../index.html");
     }
 ?>
@@ -44,27 +41,29 @@
             </ul>
         </nav>
         <main>
-            <div class="time">
-                <img src="../img/tiempo.png">
-                <div class="progress-container">
-                    <div class="progress"></div>
-                </div>
-            </div>
             <div class="game">
                 <form action="#" method="post">
-                    <div class="words">
-                        <div class="wordSpanish">
-                            <input type="text" name="wordSpanish" id="wordSpanish" placeholder="Introduzca traduccion en Español" <?php echo "value=". $palabra['palabraEspanol'] ." readonly";?>>
-                        </div>
-                        <div class="arrow">
-                            <img src="../img/flecha.png">
-                        </div>
-                        <div class="wordEnglish">
-                            <input type="text" name="wordEnglish" id="wordEnglish" placeholder="Introduzca traducción en Inglés">
-                        </div>
-                        <input type="submit" value="Comprobar" name="comprobar" id="comprobar" >
-                    </div>
-                    <input type="submit" value="Terminar Juego" name="terminar" id="terminar">
+                    <?php
+                        $i=0;
+                        while($fila=$resultado->fetch_assoc()){
+                            echo "
+                                <div class='word'>
+                                    <div class='wordSpanish'>
+                                        <input type='text' name='wordSpanish".$i."' id='wordSpanish' placeholder='Introduzca traduccion en Español' value=". $fila['palabraEspanol'] ." readonly>
+                                    </div>
+                                    <div class='arrow'>
+                                        <img src='../img/flecha.png'>
+                                    </div>
+                                    <div class='wordEnglish'>
+                                        <input type='text' name='wordEnglish".$i."' id='wordEnglish' placeholder='Introduzca traducción en Inglés'>
+                                    </div>
+                                </div>
+                            ";
+                            $i++;
+                        }
+                        
+                    ?>
+                    <input type="submit" value="Terminar Partida" name="terminar" id="terminar">
                 </form>
             </div>
         </main>

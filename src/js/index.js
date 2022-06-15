@@ -46,6 +46,6 @@ function insertarDatos(respuesta) {
         main.appendChild(div);
         div.appendChild(a);
         a.innerHTML=categoria
-        a.setAttribute('href', 'views/creargame.php?nombre='+categoria)
+        a.setAttribute('href', 'views/game.php?nombre='+categoria)
     }
 }

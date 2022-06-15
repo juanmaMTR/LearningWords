@@ -35,42 +35,30 @@
             //echo json_encode($palabras);
             return $palabras;
         }
-        /**
-         * @function controlarPalabra
-         * Función que controla las palabras de una partida
-         */
-        function controlarPalabra($palabras){
-            $random=mt_rand(0,count($palabras)-1);
-            $palabra=$palabras[$random];
-            $palabra=explode(",",$palabra);
-            $palabraIngles=$palabra[0];
-            $palabraEspanol=$palabra[1];
-            $idPalabra=$palabra[2];
-            $respuesta=array("palabraIngles"=>$palabraIngles,"palabraEspanol"=>$palabraEspanol,"idPalabra"=>$idPalabra);
-            return $respuesta;
-        }
-        /**
-         * @function comprobar
-         * Función que comprueba si la respuesta es correcta o no
-         */
-        function comprobar($idPartida){
-            $respuesta=$_POST['wordEnglish'];
-            $palabraEspanol=$_POST['wordSpanish'];
-            $infoPalabra=$this->modelo->sacarInfoPalabra($palabraEspanol);
-            $palabraIngles=$infoPalabra[1];
-            $idPalabra=$infoPalabra[0];
-            if($respuesta==$palabraIngles){
-                $acertada=1;
-            }else{
-                $acertada=0;
+        function terminarPartida($nombre){
+            $palabras=[];
+            $nAciertos=0;
+            $nErrores=0;
+            $nPalabras=$this->modelo->contarPalabras($nombre);
+            for($i=0;$i<$nPalabras;$i++){
+                $respuesta=$_POST['wordEnglish'.$i];
+                $palabraEspanol=$_POST['wordSpanish'.$i];
+                $infoPalabra=$this->modelo->sacarInfoPalabra($palabraEspanol);
+                $palabraIngles=$infoPalabra[1];
+                $idPalabra=$infoPalabra[0];
+                if($respuesta==$palabraIngles){
+                    $acertada=1;
+                    $nAciertos++;
+                }else{
+                    $acertada=0;
+                    $nErrores++;
+                }
+                $palabras[]=array('idPalabra'=>$idPalabra,'acertada'=>$acertada);
             }
-            $this->modelo->insertarRespuesta($idPalabra,$idPartida,$acertada);
-        }
-        function terminarPartida($idPartida){
-            $nAciertos=$this->modelo->nAciertos($idPartida);
-            $nErrores=$this->modelo->nErrores($idPartida);
             $puntuacion=$nAciertos-$nErrores;
-            $this->modelo->acabarPartida($idPartida,$nAciertos,$nErrores,$puntuacion);
+            $idTipo=$this->modelo->sacarIdTipo($nombre);
+            $idUsuario=2;
+            $this->modelo->insertarDatos($idTipo,$nAciertos,$nErrores,$puntuacion,$idUsuario,$palabras);
         }
     }
 

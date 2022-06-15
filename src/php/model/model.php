@@ -46,19 +46,13 @@
         function captarPalabras($nombre){
             $sql="SELECT * FROM palabras WHERE idTipo=(SELECT idTipo FROM tipos where nombreTipo='$nombre');";
             $resultado=$this->conexion->query($sql);
-            $palabras=array();
-            while($fila=$resultado->fetch_assoc()){
-                $palabras[]=$fila['palabraIngles'].",".$fila['palabraEspanol'].",".$fila['idPalabra'];
-            }
-            return $palabras;
+            return $resultado;
         }
-        /**
-         * @function insertarRespuesta
-         * Funcion que llama a la base de datos para insertar la respuesta de una palabra de la partida
-         */
-        function insertarRespuesta($idPalabra,$idPartida,$acertada){
-            $sql="INSERT INTO partidas_palabras (idPartida,idPalabra,acertada) VALUES ($idPartida,$idPalabra,$acertada);";
-            $this->conexion->query($sql);
+        function contarPalabras($nombre){
+            $sql="SELECT COUNT(*) as 'nPalabras' FROM palabras WHERE idTipo=(SELECT idTipo FROM tipos where nombreTipo='$nombre');";
+            $resultado=$this->conexion->query($sql);
+            $fila=$resultado->fetch_assoc();
+            return $fila['nPalabras'];
         }
         /**
          * @function sacarInfoPalabra
@@ -75,21 +69,20 @@
             }
             return [$idPalabra,$palabraIngles];
         }
-        function nAciertos($idPartida){
-            $sql="SELECT COUNT(*) as nAciertos FROM partidas_palabras WHERE idPartida=$idPartida AND acertada=1;";
+        function sacarIdTipo($nombre){
+            $sql="SELECT idTipo FROM tipos where nombreTipo='$nombre';";
             $resultado=$this->conexion->query($sql);
             $fila=$resultado->fetch_assoc();
-            return $fila['nAciertos'];
+            return $fila['idTipo'];
         }
-        function nErrores($idPartida){
-            $sql="SELECT COUNT(*) as nErrores FROM partidas_palabras WHERE idPartida=$idPartida AND acertada=0;";
-            $resultado=$this->conexion->query($sql);
-            $fila=$resultado->fetch_assoc();
-            return $fila['nErrores'];
-        }
-        function acabarPartida($idPartida,$nAciertos,$nErrores,$puntuacion){
-            $sql="UPDATE partidas SET nAciertos=$nAciertos,nErrores=$nErrores,puntuacion=$puntuacion,fechaHora=now() WHERE idPartida=$idPartida;";
+        function insertarDatos($idTipo,$nAciertos,$nErrores,$puntuacion,$idUsuario,$palabras){
+            $sql="INSERT INTO partidas(tiempo,nAciertos,nErrores,puntuacion,fechaHora,idUsuario,idTipo) VALUES (default,$nAciertos,$nErrores,$puntuacion,NOW(),$idUsuario,$idTipo);";
             $this->conexion->query($sql);
+            $idPartida=$this->conexion->insert_id;
+            foreach($palabras as $palabra){
+                $sql="INSERT INTO partidas_palabras(idPartida,idPalabra,acertada) VALUES ($idPartida,".$palabra['idPalabra'].",".$palabra['acertada'].");";
+                $this->conexion->query($sql);
+            }
         }
     }
 ?>
