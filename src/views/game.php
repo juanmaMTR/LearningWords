@@ -2,9 +2,9 @@
     require_once __DIR__. '/../php/controller/controller.php';
     $controlador=new Controller();
     $nombre=$_GET['nombre'];
-    /* if(!isset($_COOKIE['palabras'])){
-        setcookie('palabras',)
-    } */
+    if(!isset($nombre)){
+        header('Location: ../index.html');
+    }
     $resultado=$controlador->cogerPalabras($nombre);
     if(isset($_POST['terminar'])){
         $controlador->terminarPartida($nombre);
